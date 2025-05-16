@@ -42,4 +42,20 @@ class mysql::server::managed_dirs {
       }
     }
   }
+
+  $logerr = pick($options['mysqld']['log-error'], false)
+
+  if $logerr {
+    $logerrdir = dirname($logerr)
+    if (!$logbindir or $logerrdir != $logbindir) {
+      if (!($logerrdir == '.' or $logerrdir in $managed_dirs_path)) {
+        file { $logerrdir:
+          ensure => directory,
+          mode   => '0700',
+          owner  => $options['mysqld']['user'],
+          group  => $options['mysqld']['user'],
+        }
+      }
+    }
+  }
 }
